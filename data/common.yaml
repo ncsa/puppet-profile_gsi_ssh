@@ -1,1 +1,74 @@
---- {}
+---
+profile_gsi_ssh::server::cert::files: {}
+profile_gsi_ssh::server::cert::hostcert: ""  # PROVIDE CONTENTS OF HOST IGTF CERTIFICATE
+profile_gsi_ssh::server::cert::hostkey: ""   # PROVIDE CONTENTS OF HOST PRIVATE KEY
+profile_gsi_ssh::server::cert::monitor: true
+profile_gsi_ssh::server::cert::monitor_file_content: |
+  [[inputs.x509_cert]]
+    sources = [
+    ]
+    interval = "3h"
+profile_gsi_ssh::server::cert::monitor_file_path: "/etc/telegraf/telegraf.d/sslcert-check.conf"
+profile_gsi_ssh::server::cert::monitor_interval: "3h"
+
+profile_gsi_ssh::server::allow_groups: []
+
+profile_gsi_ssh::server::config:
+  AllowGroups: "root"
+  AuthenticationMethods: "none"
+  PermitRootLogin: "no"
+
+profile_gsi_ssh::server::config_file: "/etc/gsissh/sshd_config"
+
+profile_gsi_ssh::server::deny_groups:
+  - "all_disabled_usr"
+
+profile_gsi_ssh::server::disabled_service_name: ""
+
+# EXAMPLE CRON
+profile_gsi_ssh::server::gridmap::crons:
+  "SYNC grid-mapfile FOR GSI OPENSSH":
+    command: "/root/cron_scripts/grid-mapfile_stage.sh && /root/cron_scripts/grid-mapfile_sync.sh"
+    minute: "*/20"
+# EXAMPLE SCRIPT FILES
+profile_gsi_ssh::server::gridmap::files:
+  "/root/cron_scripts/grid-mapfile_stage.sh":
+    content: |
+      #! /bin/bash
+      # This file is managed by Puppet - Changes may be overwritten
+      set -e
+      SRCFILES="/project/home/sw/admin/grid-security/grid*mapfile*"
+      DESTFILE="/etc/grid-security/grid-mapfile.stage"
+      # FILTER RECORDS WITHOUT DOUBLE QUOTES, SORT BY MAPPED USERNAME AT END OF LINE
+      cat ${SRCFILES} | grep '\"' | awk '{print $NF,$0}' | sort | cut -f2- -d' ' | uniq > ${DESTFILE}
+    mode: "0700"
+  "/root/cron_scripts/grid-mapfile_sync.sh":
+    content: |
+      #! /bin/bash
+      # This file is managed by Puppet - Changes may be overwritten
+      set -e
+      SRCFILE="/etc/grid-security/grid-mapfile.stage"
+      DESTFILE="/etc/grid-security/grid-mapfile"
+      SIZE_DIFF="2/3"
+      if ! diff ${SRCFILE} ${DESTFILE} >/dev/null 2>&1 ; then
+        if [ -f "${DESTFILE}" ]; then
+          # ONLY COPY IF SRCFILE IS >= 2/3 of DESTFILE SIZE
+          MINSIZE=$(bc <<< "$(stat --printf=%s ${DESTFILE})*${SIZE_DIFF}")
+          rsync -q --min-size=${MINSIZE} ${SRCFILE} ${DESTFILE}
+        else
+          rsync -q ${SRCFILE} ${DESTFILE}
+        fi
+      fi
+      chmod 0444 ${DESTFILE}
+      if ! diff ${SRCFILE} ${DESTFILE} >/dev/null 2>&1 ; then
+        echo "Error: The files did not sync:"
+        ls -lh ${SRCFILE}
+        ls -lh ${DESTFILE}
+      fi
+    mode: "0700"
+
+profile_gsi_ssh::server::port: "222"
+
+profile_gsi_ssh::server::subnets:
+  - "0.0.0.0/1"  # Bottom half of all IPv4
+  - "128.0.0.0/1"  # Top half of all IPv4

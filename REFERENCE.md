@@ -9,6 +9,8 @@
 * [`profile_gsi_ssh`](#profile_gsi_ssh): Install and configure GSI OpenSSH client and/or server
 * [`profile_gsi_ssh::client`](#profile_gsi_sshclient): Install and configure GSI OpenSSH client
 * [`profile_gsi_ssh::server`](#profile_gsi_sshserver): Install and configure GSI OpenSSH Server
+* [`profile_gsi_ssh::server::cert`](#profile_gsi_sshservercert): Manage the certificates for GSI-OpenSSH service
+* [`profile_gsi_ssh::server::gridmap`](#profile_gsi_sshservergridmap): Configure and manage gridmap file
 
 ## Classes
 
@@ -21,7 +23,7 @@ Install and configure GSI OpenSSH client and/or server
 ##### 
 
 ```puppet
-include profile_gsi_ssh
+include profile_gsi_ssh::server
 ```
 
 ### <a name="profile_gsi_sshclient"></a>`profile_gsi_ssh::client`
@@ -36,6 +38,18 @@ Install and configure GSI OpenSSH client
 include profile_gsi_ssh::client
 ```
 
+#### Parameters
+
+The following parameters are available in the `profile_gsi_ssh::client` class:
+
+* [`required_packages`](#required_packages)
+
+##### <a name="required_packages"></a>`required_packages`
+
+Data type: `Array[String]`
+
+List of package names to be installed (OS specific).
+
 ### <a name="profile_gsi_sshserver"></a>`profile_gsi_ssh::server`
 
 Install and configure GSI OpenSSH Server
@@ -47,4 +61,217 @@ Install and configure GSI OpenSSH Server
 ```puppet
 include profile_gsi_ssh::server
 ```
+
+#### Parameters
+
+The following parameters are available in the `profile_gsi_ssh::server` class:
+
+* [`allow_groups`](#allow_groups)
+* [`config`](#config)
+* [`config_file`](#config_file)
+* [`deny_groups`](#deny_groups)
+* [`disable_service_name`](#disable_service_name)
+* [`files`](#files)
+* [`manage_service`](#manage_service)
+* [`port`](#port)
+* [`required_packages`](#required_packages)
+* [`service_name`](#service_name)
+* [`subnets`](#subnets)
+* [`disabled_service_name`](#disabled_service_name)
+
+##### <a name="allow_groups"></a>`allow_groups`
+
+Data type: `Array[String]`
+
+List of groups allowed access via GSI OpenSSH server
+
+##### <a name="config"></a>`config`
+
+Data type: `Hash`
+
+Hash of global config settings
+Defaults provided by this module
+Values from multiple sources are merged
+Key collisions are resolved in favor of the higher priority value
+
+##### <a name="config_file"></a>`config_file`
+
+Data type: `String`
+
+Full path to sshd_config file
+
+##### <a name="deny_groups"></a>`deny_groups`
+
+Data type: `Array[String]`
+
+List of groups denied access via GSI OpenSSH server
+
+##### <a name="disable_service_name"></a>`disable_service_name`
+
+Name of default sshd service to disable
+
+##### <a name="files"></a>`files`
+
+Data type: `Hash`
+
+File resources for setting up files
+
+##### <a name="manage_service"></a>`manage_service`
+
+Data type: `Boolean`
+
+Flag of whether to manage sshd service
+
+##### <a name="port"></a>`port`
+
+Data type: `String`
+
+TCP port that GSI OpenSSH server listens on
+
+##### <a name="required_packages"></a>`required_packages`
+
+Data type: `Array[String]`
+
+List of package names to be installed (OS specific).
+
+##### <a name="service_name"></a>`service_name`
+
+Data type: `String`
+
+Name of gsi-sshd service
+
+##### <a name="subnets"></a>`subnets`
+
+Data type: `Array[String]`
+
+List of network subnets allowed access via GSI OpenSSH server
+
+##### <a name="disabled_service_name"></a>`disabled_service_name`
+
+Data type: `String`
+
+
+
+### <a name="profile_gsi_sshservercert"></a>`profile_gsi_ssh::server::cert`
+
+Manage the certificates for GSI-OpenSSH service
+
+#### Examples
+
+##### 
+
+```puppet
+include profile_gsi_ssh::server::cert
+```
+
+#### Parameters
+
+The following parameters are available in the `profile_gsi_ssh::server::cert` class:
+
+* [`files`](#files)
+* [`hostcert`](#hostcert)
+* [`hostcert_path`](#hostcert_path)
+* [`hostkey`](#hostkey)
+* [`hostkey_path`](#hostkey_path)
+* [`monitor`](#monitor)
+* [`monitor_file_content`](#monitor_file_content)
+* [`monitor_file_path`](#monitor_file_path)
+* [`monitor_interval`](#monitor_interval)
+* [`required_packages`](#required_packages)
+
+##### <a name="files"></a>`files`
+
+Data type: `Hash`
+
+File resources for setting up files
+
+##### <a name="hostcert"></a>`hostcert`
+
+Data type: `String`
+
+Host IGTF Server certificate file contents
+
+##### <a name="hostcert_path"></a>`hostcert_path`
+
+Data type: `String`
+
+Full path to host IGTF Server certificate file
+
+##### <a name="hostkey"></a>`hostkey`
+
+Data type: `String`
+
+Host IGTF Server private key file contents
+
+##### <a name="hostkey_path"></a>`hostkey_path`
+
+Data type: `String`
+
+Full path to host IGTF Server private key file
+
+##### <a name="monitor"></a>`monitor`
+
+Data type: `Boolean`
+
+Whether to monitor the hostcert for validity with Telegraf
+
+##### <a name="monitor_file_content"></a>`monitor_file_content`
+
+Data type: `String`
+
+Content of telegraf input file template
+
+##### <a name="monitor_file_path"></a>`monitor_file_path`
+
+Data type: `String`
+
+Full path to telegraf input file template
+
+##### <a name="monitor_interval"></a>`monitor_interval`
+
+Data type: `String`
+
+Interval used by telegraf input
+
+##### <a name="required_packages"></a>`required_packages`
+
+Data type: `Array[String]`
+
+List of package names to be installed (OS specific).
+
+### <a name="profile_gsi_sshservergridmap"></a>`profile_gsi_ssh::server::gridmap`
+
+Generally speaking some files and/or cron scripts will need to be put in place for
+grid map and voms authentication.
+This class lets various custom files and cron entries be setup via hiera parameters
+for this purpose.
+
+See: https://opensciencegrid.org/docs/security/lcmaps-voms-authentication/#configuring-the-lcmaps-voms-plugin
+
+#### Examples
+
+##### 
+
+```puppet
+include profile_gsi_ssh::server::gridmap
+```
+
+#### Parameters
+
+The following parameters are available in the `profile_gsi_ssh::server::gridmap` class:
+
+* [`crons`](#crons)
+* [`files`](#files)
+
+##### <a name="crons"></a>`crons`
+
+Data type: `Hash`
+
+Cron resources for setting up gridmap files
+
+##### <a name="files"></a>`files`
+
+Data type: `Hash`
+
+File resources for setting up gridmap files
 
