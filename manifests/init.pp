@@ -1,7 +1,7 @@
 # @summary Install and configure GSI OpenSSH client and/or server
 #
 # @example
-#   include profile_gsi_ssh
+#   include profile_gsi_ssh::server
 class profile_gsi_ssh {
 
   # You will want to directly include one of the following:

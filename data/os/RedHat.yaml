@@ -1,1 +1,35 @@
---- {}
+---
+profile_gsi_ssh::client::required_packages:
+  - "globus-proxy-utils"
+  - "gsi-openssh-clients"
+
+profile_gsi_ssh::server::files:
+  "/etc/gsissh/ssh_host_ecdsa_key":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_ecdsa_key"
+  "/etc/gsissh/ssh_host_ecdsa_key.pub":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_ecdsa_key.pub"
+  "/etc/gsissh/ssh_host_ed25519_key":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_ed25519_key"
+  "/etc/gsissh/ssh_host_ed25519_key.pub":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_ed25519_key.pub"
+  "/etc/gsissh/ssh_host_rsa_key":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_rsa_key"
+  "/etc/gsissh/ssh_host_rsa_key.pub":
+    ensure: "link"
+    target: "/etc/ssh/ssh_host_rsa_key.pub"
+profile_gsi_ssh::server::manage_service: true
+profile_gsi_ssh::server::required_packages:
+  - "gsi-openssh-server"
+  #- "gsi-openssh-server-xsede"
+profile_gsi_ssh::server::service_name: "gsisshd"
+
+profile_gsi_ssh::server::cert::hostcert_path: "/etc/grid-security/hostcert.pem"
+profile_gsi_ssh::server::cert::hostkey_path: "/etc/grid-security/hostkey.pem"
+profile_gsi_ssh::server::cert::required_packages:
+  #- "osg-ca-certs"
+  - "xsede-ca-certificates"
