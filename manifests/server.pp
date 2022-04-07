@@ -146,7 +146,7 @@ class profile_gsi_ssh::server (
     'position' => 'before first match'
   }
   $additional_match_params = {
-    'AuthenticationMethods' => 'gssapi-with-mic',
+    'AuthenticationMethods' => 'gssapi-keyex gssapi-with-mic',
   }
   $group_params = $allow_groups ? {
     Array[ String, 1 ] => { 'AllowGroups' => $allow_groups },
