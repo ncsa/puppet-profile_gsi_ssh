@@ -15,8 +15,15 @@ profile_gsi_ssh::server::allow_groups: []
 
 profile_gsi_ssh::server::config:
   AllowGroups: "root"
-  AuthenticationMethods: "none"
+  AuthenticationMethods: "gssapi-keyex gssapi-with-mic"
+  ChallengeResponseAuthentication: "no"
+  GSSAPIAuthentication: "yes"
+  GSSAPIDelegateCredentials: "no"
+  HostbasedAuthentication: "no"
+  KerberosAuthentication: "no"
+  PasswordAuthentication: "no"
   PermitRootLogin: "no"
+  PubkeyAuthentication: "no"
 
 profile_gsi_ssh::server::config_file: "/etc/gsissh/sshd_config"
 
